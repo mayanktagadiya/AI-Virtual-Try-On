@@ -1,0 +1,58 @@
+[
+  {
+    "id": "tshirt-001",
+    "name": "Classic White Tee",
+    "image_url": "/static/catalog/tshirt-001.png",
+    "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+    "garment_measurements": { "chest_cm": 96, "length_cm": 70, "sleeve_cm": 20 }
+  },
+  {
+    "id": "tshirt-002",
+    "name": "Navy Blue Essential",
+    "image_url": "/static/catalog/tshirt-002.png",
+    "available_sizes": ["S", "M", "L", "XL"],
+    "garment_measurements": { "chest_cm": 98, "length_cm": 72, "sleeve_cm": 21 }
+  },
+  {
+    "id": "tshirt-003",
+    "name": "Graphite Slim Fit",
+    "image_url": "/static/catalog/tshirt-003.png",
+    "available_sizes": ["XS", "S", "M", "L"],
+    "garment_measurements": { "chest_cm": 92, "length_cm": 68, "sleeve_cm": 19 }
+  },
+  {
+    "id": "tshirt-004",
+    "name": "Forest Green Relaxed",
+    "image_url": "/static/catalog/tshirt-004.png",
+    "available_sizes": ["S", "M", "L", "XL", "XXL"],
+    "garment_measurements": { "chest_cm": 104, "length_cm": 74, "sleeve_cm": 22 }
+  },
+  {
+    "id": "tshirt-005",
+    "name": "Heather Grey V-Neck",
+    "image_url": "/static/catalog/tshirt-005.png",
+    "available_sizes": ["XS", "S", "M", "L", "XL"],
+    "garment_measurements": { "chest_cm": 94, "length_cm": 69, "sleeve_cm": 20 }
+  },
+  {
+    "id": "tshirt-006",
+    "name": "Burgundy Crew Neck",
+    "image_url": "/static/catalog/tshirt-006.png",
+    "available_sizes": ["S", "M", "L", "XL"],
+    "garment_measurements": { "chest_cm": 100, "length_cm": 71, "sleeve_cm": 21 }
+  },
+  {
+    "id": "tshirt-007",
+    "name": "Black Oversized Drop",
+    "image_url": "/static/catalog/tshirt-007.png",
+    "available_sizes": ["M", "L", "XL", "XXL"],
+    "garment_measurements": { "chest_cm": 112, "length_cm": 78, "sleeve_cm": 24 }
+  },
+  {
+    "id": "tshirt-008",
+    "name": "Sky Blue Linen Blend",
+    "image_url": "/static/catalog/tshirt-008.png",
+    "available_sizes": ["XS", "S", "M", "L", "XL"],
+    "garment_measurements": { "chest_cm": 96, "length_cm": 70, "sleeve_cm": 20 }
+  }
+]
