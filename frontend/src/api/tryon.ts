@@ -1,9 +1,9 @@
-import { TryOnResultSchema, type Measurements, type TryOnResult } from "@/types/tryon";
+import {
+  TryOnResultSchema,
+  type Measurements,
+  type TryOnResult,
+} from "@/types/tryon";
 import { apiClient } from "./client";
-
-// 1x1 grey PNG used as placeholder until real provider is wired (Day 3)
-const PLACEHOLDER_BASE64 =
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
 
 export async function runTryOn(
   personImage: File,
@@ -13,20 +13,29 @@ export async function runTryOn(
   const form = new FormData();
   form.append("person_image", personImage);
   form.append("garment_image", garmentImage);
-  form.append("measurements", JSON.stringify(measurements));
+  form.append("height_cm", measurements.height_cm.toString());
+  form.append("weight_kg", measurements.weight_kg.toString());
+  form.append("body_type", measurements.body_type);
+  form.append("gender", measurements.gender);
 
   try {
-    const { data } = await apiClient.post("/api/v1/tryon", form);
+    const { data } = await apiClient.post("/api/v1/tryon", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return TryOnResultSchema.parse(data);
   } catch {
-    // Backend tryon endpoint arrives Day 3 — return mock for now
+    // Provider not yet configured / backend offline → rule-based mock
     return mockTryOnResult(measurements);
   }
 }
 
+// 1×1 grey PNG placeholder (replaced by real image on Day 3+)
+const PLACEHOLDER_BASE64 =
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+
 function mockTryOnResult(measurements: Measurements): TryOnResult {
   const { height_cm, weight_kg, body_type } = measurements;
-  const bmi = weight_kg / ((height_cm / 100) ** 2);
+  const bmi = weight_kg / (height_cm / 100) ** 2;
 
   const chest_fit =
     body_type === "slim" ? "loose" : bmi > 27 ? "tight" : "standard";

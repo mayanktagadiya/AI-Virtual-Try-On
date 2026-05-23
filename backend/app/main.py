@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
-from app.api.v1 import catalog, health
+from app.api.v1 import catalog, health, tryon
 from app.config import get_settings
 
 
@@ -41,6 +41,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(catalog.router, prefix="/api/v1")
+    app.include_router(tryon.router, prefix="/api/v1")
 
     return app
 

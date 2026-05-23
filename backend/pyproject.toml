@@ -5,6 +5,7 @@ description = "AI Virtual Try-On — FastAPI backend"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.136.1",
+    "gradio-client>=2.5.0",
     "httpx>=0.28.1",
     "loguru>=0.7.3",
     "pillow>=12.2.0",

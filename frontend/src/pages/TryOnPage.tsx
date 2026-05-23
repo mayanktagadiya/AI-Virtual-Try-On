@@ -5,7 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import GarmentStep from "@/components/wizard/GarmentStep";
 import MeasurementForm from "@/components/wizard/MeasurementForm";
-import PhotoUpload from "@/components/wizard/PhotoUpload";
+import PhotoStep from "@/components/wizard/PhotoStep";
 import ResultStep from "@/components/wizard/ResultStep";
 import WizardProgress from "@/components/wizard/WizardProgress";
 import { cn } from "@/lib/utils";
@@ -71,12 +71,7 @@ export default function TryOnPage() {
         <h2 className="text-base font-semibold mb-5">{stepTitle.label}</h2>
 
         {step === 0 && (
-          <PhotoUpload
-            label="Your photo"
-            hint="Front-facing, good lighting. Your face and body should be clearly visible."
-            value={personImage}
-            onChange={setPersonImage}
-          />
+          <PhotoStep value={personImage} onChange={setPersonImage} />
         )}
 
         {step === 1 && (
