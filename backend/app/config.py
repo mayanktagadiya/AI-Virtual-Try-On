@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
     tryon_provider: str = Field(default="stub", alias="TRYON_PROVIDER")
 
+    hf_token: str | None = Field(default=None, alias="HF_TOKEN")
+
     frontend_origin: str = Field(
         default="http://localhost:5173", alias="FRONTEND_ORIGIN"
     )

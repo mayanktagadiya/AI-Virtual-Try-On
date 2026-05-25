@@ -42,16 +42,32 @@ export default function ResultStep({ result, isLoading }: ResultStepProps) {
   }
 
   const { fit_prediction } = result;
+  const isPlaceholder = result.provider === "stub" || result.provider === "mock";
 
   return (
     <div className="space-y-6">
-      {/* Generated image */}
+      {/* Generated image — or placeholder when using stub/mock provider */}
       <div className="flex justify-center">
-        <img
-          src={`data:${result.mime_type};base64,${result.image_base64}`}
-          alt="AI-generated try-on result"
-          className="max-h-96 rounded-xl border border-border object-contain shadow-sm"
-        />
+        {isPlaceholder ? (
+          <div className="w-full max-w-xs aspect-[3/4] rounded-xl border-2 border-dashed border-border bg-muted/40 flex flex-col items-center justify-center gap-3 text-center px-6">
+            <div className="size-12 rounded-full bg-muted flex items-center justify-center text-2xl">
+              👕
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">AI image appears here</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Set <code className="bg-muted px-1 rounded">TRYON_PROVIDER=huggingface</code> in{" "}
+                <code className="bg-muted px-1 rounded">backend/.env</code> to generate a real try-on image
+              </p>
+            </div>
+          </div>
+        ) : (
+          <img
+            src={`data:${result.mime_type};base64,${result.image_base64}`}
+            alt="AI-generated try-on result"
+            className="max-h-96 rounded-xl border border-border object-contain shadow-sm"
+          />
+        )}
       </div>
 
       {/* Fit prediction */}

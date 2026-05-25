@@ -28,8 +28,10 @@ class HuggingFaceProvider(TryOnProvider):
 
     def _get_client(self) -> Client:
         if self._client is None:
-            logger.info("Connecting to HuggingFace Space: {}", self._space)
-            self._client = Client(self._space)
+            from app.config import get_settings
+            token = get_settings().hf_token
+            logger.info("Connecting to HuggingFace Space: {} (auth={})", self._space, bool(token))
+            self._client = Client(self._space, hf_token=token)
         return self._client
 
     def _predict(self, person_path: str, garment_path: str) -> str:
