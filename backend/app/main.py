@@ -1,12 +1,16 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from loguru import logger
 
 from app.api.v1 import catalog, health, tryon
 from app.config import get_settings
+
+_STATIC_DIR = Path(__file__).parent.parent / "static"
 
 
 def create_app() -> FastAPI:
@@ -38,6 +42,10 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Serve catalog images at /static/catalog/<filename>
+    _STATIC_DIR.mkdir(exist_ok=True)
+    app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
     app.include_router(health.router)
     app.include_router(catalog.router, prefix="/api/v1")

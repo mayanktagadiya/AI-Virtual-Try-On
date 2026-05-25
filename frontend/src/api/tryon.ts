@@ -5,18 +5,30 @@ import {
 } from "@/types/tryon";
 import { apiClient } from "./client";
 
+interface GarmentSource {
+  garmentImage: File | null;
+  garmentId: string | null;
+}
+
 export async function runTryOn(
   personImage: File,
-  garmentImage: File,
-  measurements: Measurements
+  measurements: Measurements,
+  garment: GarmentSource
 ): Promise<TryOnResult> {
   const form = new FormData();
   form.append("person_image", personImage);
-  form.append("garment_image", garmentImage);
   form.append("height_cm", measurements.height_cm.toString());
   form.append("weight_kg", measurements.weight_kg.toString());
   form.append("body_type", measurements.body_type);
   form.append("gender", measurements.gender);
+
+  if (garment.garmentId) {
+    form.append("garment_id", garment.garmentId);
+  } else if (garment.garmentImage) {
+    form.append("garment_image", garment.garmentImage);
+  } else {
+    throw new Error("Provide either garmentId or garmentImage");
+  }
 
   try {
     const { data } = await apiClient.post("/api/v1/tryon", form, {
@@ -24,12 +36,12 @@ export async function runTryOn(
     });
     return TryOnResultSchema.parse(data);
   } catch {
-    // Provider not yet configured / backend offline → rule-based mock
     return mockTryOnResult(measurements);
   }
 }
 
-// 1×1 grey PNG placeholder (replaced by real image on Day 3+)
+// ── Mock fallback (backend offline / provider not configured) ────────────────
+
 const PLACEHOLDER_BASE64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
 
@@ -39,10 +51,8 @@ function mockTryOnResult(measurements: Measurements): TryOnResult {
 
   const chest_fit =
     body_type === "slim" ? "loose" : bmi > 27 ? "tight" : "standard";
-  const length =
-    height_cm > 185 ? "short" : height_cm < 165 ? "long" : "standard";
-  const sleeve =
-    height_cm > 183 ? "short" : height_cm < 165 ? "long" : "standard";
+  const length = height_cm > 185 ? "short" : height_cm < 165 ? "long" : "standard";
+  const sleeve = height_cm > 183 ? "short" : height_cm < 165 ? "long" : "standard";
 
   return {
     image_base64: PLACEHOLDER_BASE64,
