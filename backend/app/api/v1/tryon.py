@@ -5,7 +5,9 @@ from pathlib import Path
 from fastapi import APIRouter, Form, HTTPException, UploadFile
 from loguru import logger
 
+from app.config import get_settings
 from app.fit_prediction import FitPredictionInput, predict_fit
+from app.fit_prediction.gemini import gemini_predict_fit
 from app.providers.base import TryOnRequest
 from app.providers.registry import get_provider
 from app.schemas.catalog import CatalogItem
@@ -103,7 +105,20 @@ async def run_tryon(
         logger.error("Provider {} failed: {}", provider.name, exc)
         raise HTTPException(status_code=502, detail=f"AI provider error: {exc}") from exc
 
-    fit = predict_fit(fit_input)
+    settings = get_settings()
+    use_gemini = (
+        settings.gemini_api_key
+        and result.provider not in ("stub", "mock")
+    )
+    if use_gemini:
+        fit = await gemini_predict_fit(
+            fit_input,
+            result.image_bytes,
+            result.mime_type,
+            settings.gemini_api_key,  # type: ignore[arg-type]
+        )
+    else:
+        fit = predict_fit(fit_input)
 
     return TryOnResponse(
         image_base64=base64.b64encode(result.image_bytes).decode(),

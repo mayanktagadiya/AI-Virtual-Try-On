@@ -14,6 +14,8 @@ class Settings(BaseSettings):
 
     hf_token: str | None = Field(default=None, alias="HF_TOKEN")
 
+    gemini_api_key: str | None = Field(default=None, alias="GEMINI_API_KEY")
+
     frontend_origin: str = Field(
         default="http://localhost:5173", alias="FRONTEND_ORIGIN"
     )

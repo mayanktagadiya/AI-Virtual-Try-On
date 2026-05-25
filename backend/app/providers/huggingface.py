@@ -31,7 +31,7 @@ class HuggingFaceProvider(TryOnProvider):
             from app.config import get_settings
             token = get_settings().hf_token
             logger.info("Connecting to HuggingFace Space: {} (auth={})", self._space, bool(token))
-            self._client = Client(self._space, hf_token=token)
+            self._client = Client(self._space, token=token)
         return self._client
 
     def _predict(self, person_path: str, garment_path: str) -> str:
@@ -50,8 +50,11 @@ class HuggingFaceProvider(TryOnProvider):
             seed=42,
             api_name="/tryon",
         )
-        # raw is (result_image_path, masked_image_path)
-        return str(raw[0])
+        # raw may be a tuple/list of paths or a dict depending on Space version
+        logger.debug("IDM-VTON raw result type={} value={}", type(raw), raw)
+        if isinstance(raw, (list, tuple)):
+            return str(raw[0])
+        return str(raw)
 
     async def generate(self, request: TryOnRequest) -> TryOnResult:
         start = time.monotonic()
