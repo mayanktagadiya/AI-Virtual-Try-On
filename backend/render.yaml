@@ -4,7 +4,8 @@ services:
     runtime: python
     region: oregon
     plan: free
-    buildCommand: python -m pip install uv && uv sync --frozen
+    pythonVersion: "3.12.0"
+    buildCommand: pip install uv && uv sync --frozen
     startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
     rootDir: backend
     envVars:
