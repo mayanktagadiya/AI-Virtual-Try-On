@@ -2,12 +2,17 @@ services:
   - type: web
     name: tryon-backend
     runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     rootDir: backend
-    buildCommand: pip install uv && uv sync --frozen
-    startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /health
     envVars:
       - key: TRYON_PROVIDER
-        value: stub
+        value: huggingface
+      - key: HF_TOKEN
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
       - key: FRONTEND_ORIGIN
-        value: https://tryon-mvp.vercel.app
+        sync: false
