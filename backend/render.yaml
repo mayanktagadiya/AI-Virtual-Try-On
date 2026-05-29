@@ -4,16 +4,15 @@ services:
     runtime: python
     region: oregon
     plan: free
-    pythonVersion: "3.12.0"
-    buildCommand: pip install uv && uv sync --frozen
-    startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     rootDir: backend
     envVars:
       - key: TRYON_PROVIDER
         value: huggingface
       - key: HF_TOKEN
-        sync: false        # set manually in Render dashboard
+        sync: false
       - key: GEMINI_API_KEY
-        sync: false        # set manually in Render dashboard
+        sync: false
       - key: FRONTEND_ORIGIN
-        sync: false        # set to your Vercel URL after deploy
+        sync: false
