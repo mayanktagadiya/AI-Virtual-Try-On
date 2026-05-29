@@ -41,6 +41,19 @@ export default function PhotoStep({ value, onChange }: PhotoStepProps) {
 
   return (
     <div className="space-y-5">
+      {/* Photo tips */}
+      {!value && (
+        <div className="rounded-lg border border-border bg-muted/40 px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Photo tips</p>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span>Stand straight, facing the camera</li>
+            <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span>Arms slightly away from your body</li>
+            <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span>Wear a plain t-shirt for best results</li>
+            <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span>Light or white background works best</li>
+          </ul>
+        </div>
+      )}
+
       {/* If we have landmarks show the annotated canvas; otherwise show the normal upload */}
       {value && status === "detected" ? (
         <div className="space-y-2">
