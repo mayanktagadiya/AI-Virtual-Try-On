@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { runTryOn } from "@/api/tryon";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import MeasurementForm from "@/components/wizard/MeasurementForm";
 import PhotoStep from "@/components/wizard/PhotoStep";
 import ResultStep from "@/components/wizard/ResultStep";
 import WizardProgress from "@/components/wizard/WizardProgress";
+import { saveToGallery } from "@/lib/gallery";
 import { cn } from "@/lib/utils";
 import {
   WIZARD_STEPS,
@@ -37,6 +39,14 @@ export default function TryOnPage() {
     onSuccess: (data) => {
       setResult(data);
       setStep(3);
+      // auto-save real results (skip stub/mock)
+      if (data.provider !== "stub" && data.provider !== "mock") {
+        const garmentName =
+          garmentSelection?.mode === "catalog"
+            ? garmentSelection.item.name
+            : undefined;
+        saveToGallery(data, garmentName);
+      }
     },
   });
 
@@ -61,7 +71,7 @@ export default function TryOnPage() {
   const stepTitle = WIZARD_STEPS[step];
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 flex-1">
+    <main className="mx-auto max-w-2xl px-4 py-6 sm:py-10 flex-1">
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-1">Virtual Try-On</h1>
         <p className="text-sm text-muted-foreground">{stepTitle.description}</p>
@@ -69,7 +79,7 @@ export default function TryOnPage() {
 
       <WizardProgress currentStep={step} />
 
-      <Card className="mt-6 p-6">
+      <Card className="mt-6 p-4 sm:p-6">
         <h2 className="text-base font-semibold mb-5">{stepTitle.label}</h2>
 
         {step === 0 && (
@@ -115,20 +125,27 @@ export default function TryOnPage() {
         )}
 
         {step === 3 && !tryOnMutation.isPending && (
-          <button
-            type="button"
-            onClick={() => {
-              setStep(0);
-              setPersonImage(null);
-              setMeasurements(null);
-              setGarmentSelection(null);
-              setResult(null);
-              tryOnMutation.reset();
-            }}
-            className={buttonVariants({ variant: "outline" })}
-          >
-            Start over
-          </button>
+          <div className="flex gap-2">
+            {result && result.provider !== "stub" && result.provider !== "mock" && (
+              <Link to="/gallery" className={buttonVariants({ variant: "outline" })}>
+                View Gallery
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setStep(0);
+                setPersonImage(null);
+                setMeasurements(null);
+                setGarmentSelection(null);
+                setResult(null);
+                tryOnMutation.reset();
+              }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Start over
+            </button>
+          </div>
         )}
       </div>
 

@@ -35,11 +35,11 @@ export default function LandingPage() {
   return (
     <main className="flex-1">
       {/* Hero */}
-      <section className="mx-auto max-w-5xl px-4 py-20 text-center">
+      <section className="mx-auto max-w-5xl px-4 py-12 sm:py-20 text-center">
         <span className="inline-block rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground mb-6">
           Portfolio Project · AI + Computer Vision
         </span>
-        <h1 className="text-5xl font-bold tracking-tight sm:text-6xl mb-4">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-4">
           Try clothes on —
           <br />
           <span className="text-primary">without trying them on.</span>
