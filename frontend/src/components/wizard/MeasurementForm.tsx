@@ -22,12 +22,11 @@ type FormFields = {
   gender: string;
 };
 
-type FieldErrors = Partial<Record<keyof FormFields, string>>;
+type FieldKey = keyof FormFields;
+type FieldErrors = Partial<Record<FieldKey, string>>;
+type Touched = Partial<Record<FieldKey, boolean>>;
 
-export default function MeasurementForm({
-  value,
-  onChange,
-}: MeasurementFormProps) {
+export default function MeasurementForm({ value, onChange }: MeasurementFormProps) {
   const [fields, setFields] = useState<FormFields>({
     height_cm: value?.height_cm?.toString() ?? "",
     weight_kg: value?.weight_kg?.toString() ?? "",
@@ -35,36 +34,52 @@ export default function MeasurementForm({
     gender: value?.gender ?? "",
   });
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Touched>({});
 
-  const validate = (updated: FormFields): boolean => {
+  const runValidation = (updated: FormFields): FieldErrors => {
     const result = MeasurementSchema.safeParse({
-      height_cm: Number(updated.height_cm),
-      weight_kg: Number(updated.weight_kg),
+      height_cm: updated.height_cm === "" ? undefined : Number(updated.height_cm),
+      weight_kg: updated.weight_kg === "" ? undefined : Number(updated.weight_kg),
       body_type: updated.body_type || undefined,
       gender: updated.gender || undefined,
     });
 
     if (result.success) {
-      setErrors({});
       onChange(result.data);
-      return true;
+      return {};
     }
 
+    onChange(null);
     const fieldErrors: FieldErrors = {};
     for (const issue of result.error.issues) {
-      const key = issue.path[0] as keyof FieldErrors;
-      fieldErrors[key] = issue.message;
+      const key = issue.path[0] as FieldKey;
+      if (!fieldErrors[key]) fieldErrors[key] = issue.message;
     }
-    setErrors(fieldErrors);
-    onChange(null);
-    return false;
+    return fieldErrors;
   };
 
-  const update = (patch: Partial<FormFields>) => {
+  const touch = (field: FieldKey) => {
+    setTouched((prev) => {
+      const next = { ...prev, [field]: true };
+      // re-run validation so errors update immediately on blur
+      const errs = runValidation(fields);
+      setErrors(errs);
+      return next;
+    });
+  };
+
+  const update = (patch: Partial<FormFields>, touchField?: FieldKey) => {
     const updated = { ...fields, ...patch };
     setFields(updated);
-    validate(updated);
+    const errs = runValidation(updated);
+    setErrors(errs);
+    if (touchField) {
+      setTouched((prev) => ({ ...prev, [touchField]: true }));
+    }
   };
+
+  const err = (field: FieldKey) =>
+    touched[field] ? errors[field] : undefined;
 
   return (
     <div className="space-y-5">
@@ -80,10 +95,11 @@ export default function MeasurementForm({
             max={250}
             value={fields.height_cm}
             onChange={(e) => update({ height_cm: e.target.value })}
-            aria-invalid={!!errors.height_cm}
+            onBlur={() => touch("height_cm")}
+            aria-invalid={!!err("height_cm")}
           />
-          {errors.height_cm && (
-            <p className="text-xs text-destructive">{errors.height_cm}</p>
+          {err("height_cm") && (
+            <p className="text-xs text-destructive">{err("height_cm")}</p>
           )}
         </div>
 
@@ -98,10 +114,11 @@ export default function MeasurementForm({
             max={300}
             value={fields.weight_kg}
             onChange={(e) => update({ weight_kg: e.target.value })}
-            aria-invalid={!!errors.weight_kg}
+            onBlur={() => touch("weight_kg")}
+            aria-invalid={!!err("weight_kg")}
           />
-          {errors.weight_kg && (
-            <p className="text-xs text-destructive">{errors.weight_kg}</p>
+          {err("weight_kg") && (
+            <p className="text-xs text-destructive">{err("weight_kg")}</p>
           )}
         </div>
       </div>
@@ -111,9 +128,9 @@ export default function MeasurementForm({
         <Label>Body type</Label>
         <Select
           value={fields.body_type}
-          onValueChange={(v) => update({ body_type: v ?? "" })}
+          onValueChange={(v) => update({ body_type: v ?? "" }, "body_type")}
         >
-          <SelectTrigger aria-invalid={!!errors.body_type}>
+          <SelectTrigger aria-invalid={!!err("body_type")}>
             <SelectValue placeholder="Select body type" />
           </SelectTrigger>
           <SelectContent>
@@ -123,8 +140,8 @@ export default function MeasurementForm({
             <SelectItem value="heavier">Heavier</SelectItem>
           </SelectContent>
         </Select>
-        {errors.body_type && (
-          <p className="text-xs text-destructive">{errors.body_type}</p>
+        {err("body_type") && (
+          <p className="text-xs text-destructive">{err("body_type")}</p>
         )}
       </div>
 
@@ -133,9 +150,9 @@ export default function MeasurementForm({
         <Label>Gender</Label>
         <Select
           value={fields.gender}
-          onValueChange={(v) => update({ gender: v ?? "" })}
+          onValueChange={(v) => update({ gender: v ?? "" }, "gender")}
         >
-          <SelectTrigger aria-invalid={!!errors.gender}>
+          <SelectTrigger aria-invalid={!!err("gender")}>
             <SelectValue placeholder="Select gender" />
           </SelectTrigger>
           <SelectContent>
@@ -144,8 +161,8 @@ export default function MeasurementForm({
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
-        {errors.gender && (
-          <p className="text-xs text-destructive">{errors.gender}</p>
+        {err("gender") && (
+          <p className="text-xs text-destructive">{err("gender")}</p>
         )}
       </div>
     </div>
